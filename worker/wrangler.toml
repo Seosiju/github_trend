@@ -1,0 +1,10 @@
+name = "github-trend-digest"
+main = "worker.js"
+compatibility_date = "2026-10-01"
+
+# secrets (wrangler secret put <NAME>):
+#   SLACK_SIGNING_SECRET  - Slack app > Basic Information > Signing Secret
+#   GITHUB_TOKEN          - fine-grained PAT, repo 한정, Actions: Read and write
+# vars:
+[vars]
+GITHUB_REPO = "Seosiju/github_trend"

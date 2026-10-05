@@ -56,6 +56,10 @@ def main() -> int:
     args = parser.parse_args()
 
     config = yaml.safe_load(Path(args.config).read_text())
+    # Slack 명령/수동 실행에서 기간 오버라이드 (daily|weekly|monthly)
+    override = os.environ.get("PERIOD_OVERRIDE")
+    if override in ("daily", "weekly", "monthly"):
+        config["period"] = override
     state_path = Path(STATE_FILE)
     state = prune(load_state(state_path), int(config.get("dedup_days", 14)))
 

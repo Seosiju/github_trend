@@ -4,7 +4,19 @@ on:
   # GitHub Actions cron은 UTC만 지원. 09:00 KST = 00:00 UTC.
   schedule:
     - cron: "0 0 * * *"
+  # Slack slash command -> Cloudflare Worker -> 이 이벤트
+  repository_dispatch:
+    types: [trending-request]
   workflow_dispatch:
+    inputs:
+      period:
+        description: "daily | weekly | monthly (비우면 config.yaml 기본값)"
+        required: false
+        type: choice
+        options:
+          - daily
+          - weekly
+          - monthly
 
 permissions:
   contents: read
@@ -35,6 +47,7 @@ jobs:
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          PERIOD_OVERRIDE: ${{ github.event.client_payload.period || inputs.period }}
         run: python main.py
 
       - name: Save dedup state
