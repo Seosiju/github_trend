@@ -64,7 +64,11 @@ def main() -> int:
     state = prune(load_state(state_path), int(config.get("dedup_days", 14)))
 
     repos = trending.collect(config)
-    fresh = [r for r in repos if r["fullname"] not in state["sent"]]
+    # 수동 요청(slash command/수동 실행)은 dedup을 건너뛰고 항상 목록을 보여준다
+    if os.environ.get("BYPASS_DEDUP") == "true":
+        fresh = repos
+    else:
+        fresh = [r for r in repos if r["fullname"] not in state["sent"]]
     print(f"[info] collected={len(repos)} fresh={len(fresh)}")
 
     summaries = summarizer.summarize(fresh, config)

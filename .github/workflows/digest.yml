@@ -48,6 +48,8 @@ jobs:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           PERIOD_OVERRIDE: ${{ github.event.client_payload.period || inputs.period }}
+          # 스케줄만 dedup 적용. 수동 요청은 사용자가 명시적으로 보고 싶은 것이므로 항상 전송
+          BYPASS_DEDUP: ${{ github.event_name != 'schedule' }}
         run: python main.py
 
       - name: Save dedup state
