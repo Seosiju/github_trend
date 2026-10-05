@@ -37,13 +37,14 @@ gh secret set OPENAI_API_KEY --body "sk-..."
 
 ### 3. config.yaml 수정
 
-`languages`, `keywords`, `max_repositories`, `use_llm`, `summary_language`, `llm_model`, `dedup_days`를 조정한다. 언어는 `github.com/trending/<slug>`의 slug 기준(대소문자 무관, 예: `Python`, `C++`은 `cpp`).
+`languages`, `keywords`, `period`(daily/weekly/monthly), `max_repositories`, `use_llm`, `summary_language`, `llm_model`, `dedup_days`를 조정한다. 언어는 `github.com/trending/<slug>`의 slug 기준(대소문자 무관, 예: `Python`, `C++`은 `cpp`).
 
 ### 4. GitHub Actions 활성화 / 테스트
 
 - 스케줄: 매일 **09:00 KST** (cron `0 0 * * *`, UTC 기준)
 - 수동 테스트: **Actions → digest → Run workflow**
 - GitHub 스케줄 잡은 부하가 몰리면 수 분 지연될 수 있다. 공짜 cron의 통상 특성이다.
+- `keepalive` workflow가 매월 1일 빈 커밋을 push해 60일 무활동 시 스케줄이 꺼지는 것을 방지한다.
 
 ## 로컬 테스트
 

@@ -29,6 +29,7 @@ def collect(config: dict) -> list[dict]:
     """전체 + 관심 언어별 trending을 모아 필터/정렬/상한 적용 후 반환한다."""
     languages = {str(l).lower() for l in (config.get("languages") or [])}
     keywords = config.get("keywords") or []
+    period = config.get("period", "daily")
     # 전체 목록 + 언어별 목록. 언어별 slug는 소문자 형태가 대부분 그대로 동작한다.
     sources = [None] + sorted(languages)
 
@@ -36,7 +37,7 @@ def collect(config: dict) -> list[dict]:
     repos: list[dict] = []
     for lang in sources:
         try:
-            fetched = fetch_repos(language=lang, since="daily")
+            fetched = fetch_repos(language=lang, since=period)
         except Exception as e:
             print(f"[warn] trending fetch failed (language={lang}): {e}")
             continue

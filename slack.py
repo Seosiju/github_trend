@@ -6,47 +6,75 @@ import requests
 
 MAX_BLOCKS = 45  # Slack 한 메시지당 block 상한 여유분
 
+_PERIOD_LABEL = {"daily": "Daily", "weekly": "Weekly", "monthly": "Monthly"}
+_STARS_LABEL = {"daily": "today", "weekly": "this week", "monthly": "this month"}
 
-def _repo_text(idx: int, repo: dict, summaries: dict) -> str:
+
+def _context(text: str) -> dict:
+    return {"type": "context", "elements": [{"type": "mrkdwn", "text": text}]}
+
+
+def _repo_blocks(idx: int, repo: dict, summaries: dict, stars_label: str) -> list:
     summary = summaries.get(repo["fullname"]) or repo["description"] or "(no description)"
     lang = f" · {repo['language']}" if repo["language"] else ""
-    return (
-        f"*{idx}. <{repo['url']}|{repo['fullname']}>*\n"
-        f":star: +{repo['stars_today']:,} today · {repo['stars']:,} total{lang}\n"
-        f"{summary}"
-    )
+    meta = f":star: +{repo['stars_today']:,} {stars_label} · {repo['stars']:,} total{lang}"
+    return [
+        {
+            "type": "section",
+            "text": {
+                "type": "mrkdwn",
+                "text": f"*{idx}. <{repo['url']}|{repo['fullname']}>*\n{summary}",
+            },
+        },
+        _context(meta),
+    ]
 
 
-def build_payload(date_str: str, repos: list[dict], summaries: dict) -> dict:
+def build_payload(
+    date_str: str,
+    repos: list[dict],
+    summaries: dict,
+    period: str = "daily",
+    filters: dict | None = None,
+) -> dict:
+    period_label = _PERIOD_LABEL.get(period, period.title())
+    stars_label = _STARS_LABEL.get(period, "today")
+    title = f"GitHub Trending — {period_label} · {date_str}"
+
     if not repos:
         return {
-            "text": f"GitHub Trending — {date_str}: 새 항목 없음",
+            "text": f"{title}: 새 항목 없음",
             "blocks": [
                 {
                     "type": "section",
                     "text": {
                         "type": "mrkdwn",
-                        "text": f"*GitHub Trending — {date_str}*\n오늘은 조건에 맞는 새 repo가 없습니다.",
+                        "text": f"*{title}*\n이번 기간에 조건에 맞는 새 repo가 없습니다.",
                     },
                 }
             ],
         }
 
     blocks = [
-        {
-            "type": "header",
-            "text": {"type": "plain_text", "text": f"GitHub Trending — {date_str}"},
-        }
+        {"type": "header", "text": {"type": "plain_text", "text": title}},
     ]
     for i, repo in enumerate(repos, 1):
-        blocks.append(
-            {
-                "type": "section",
-                "text": {"type": "mrkdwn", "text": _repo_text(i, repo, summaries)},
-            }
-        )
+        blocks += _repo_blocks(i, repo, summaries, stars_label)
+        blocks.append({"type": "divider"})
+
+    if filters:
+        langs = ", ".join(filters.get("languages") or []) or "all"
+        kws = ", ".join(filters.get("keywords") or []) or "-"
+        blocks.append(_context(f"filters — languages: {langs} · keywords: {kws}"))
+
+    # block 상한 초과 시 divider/context를 빼고 compact하게 재구성
+    if len(blocks) > MAX_BLOCKS:
+        blocks = [{"type": "header", "text": {"type": "plain_text", "text": title}}]
+        for i, repo in enumerate(repos, 1):
+            blocks += _repo_blocks(i, repo, summaries, stars_label)
+
     return {
-        "text": f"GitHub Trending — {date_str} ({len(repos)} repos)",
+        "text": f"{title} ({len(repos)} repos)",
         "blocks": blocks[:MAX_BLOCKS],
     }
 

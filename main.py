@@ -65,7 +65,13 @@ def main() -> int:
 
     summaries = summarizer.summarize(fresh, config)
     today = datetime.now(timezone.utc).astimezone().date().isoformat()
-    payload = slack.build_payload(today, fresh, summaries)
+    payload = slack.build_payload(
+        today,
+        fresh,
+        summaries,
+        period=config.get("period", "daily"),
+        filters={"languages": config.get("languages"), "keywords": config.get("keywords")},
+    )
 
     if args.dry_run:
         print(json.dumps(payload, ensure_ascii=False, indent=2))

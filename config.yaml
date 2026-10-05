@@ -19,6 +19,9 @@ keywords:
   - infrastructure
   - database
 
+# 트렌딩 기간: daily | weekly | monthly
+period: daily
+
 # 한 번에 보낼 최대 repo 수
 max_repositories: 10
 
