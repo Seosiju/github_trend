@@ -46,6 +46,15 @@ gh secret set OPENAI_API_KEY --body "sk-..."
 - GitHub 스케줄 잡은 부하가 몰리면 수 분 지연될 수 있다. 공짜 cron의 통상 특성이다.
 - `keepalive` workflow가 매월 1일 빈 커밋을 push해 60일 무활동 시 스케줄이 꺼지는 것을 방지한다.
 
+## Slack slash command (선택)
+
+`/trending [daily|weekly|monthly]` — Cloudflare Worker가 Slack 명령을 받아 GitHub `repository_dispatch`로 중계한다. 코드는 `worker/` (wrangler).
+
+설정:
+1. Worker secret: `wrangler secret put SLACK_SIGNING_SECRET` (Slack 앱의 Signing Secret), `wrangler secret put GITHUB_TOKEN` (repo `Contents: Read and write` fine-grained PAT)
+2. Slack 앱 → **Slash Commands → Create New Command** → Command `/trending`, Request URL `https://github-trend-digest.jssim.workers.dev`
+3. 채널에서 `/trending`, `/trending weekly` 등으로 호출
+
 ## 로컬 테스트
 
 ```sh
