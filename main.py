@@ -65,18 +65,15 @@ def main() -> int:
 
     repos = trending.collect(config)
     # 수동 요청(slash command/수동 실행)은 dedup을 건너뛰고 항상 목록을 보여준다
-    if os.environ.get("BYPASS_DEDUP") == "true":
-        fresh = repos
-    else:
-        threshold = int(config.get("respike_threshold", 1500))
-        fresh, respiked = [], []
-        for r in repos:
-            if r["fullname"] not in state["sent"]:
-                fresh.append(r)
-            elif r["stars_today"] >= threshold:
-                r["respiked"] = True
-                respiked.append(r)
-        fresh += respiked
+    bypass = os.environ.get("BYPASS_DEDUP") == "true"
+    threshold = int(config.get("respike_threshold", 1500))
+    fresh = []
+    for r in repos:
+        seen = r["fullname"] in state["sent"]
+        if seen and r["stars_today"] >= threshold:
+            r["respiked"] = True
+        if bypass or not seen or r.get("respiked"):
+            fresh.append(r)
     print(f"[info] collected={len(repos)} fresh={len(fresh)}")
 
     summaries = summarizer.summarize(fresh, config)
