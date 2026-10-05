@@ -1,0 +1,45 @@
+name: digest
+
+on:
+  # GitHub Actions cron은 UTC만 지원. 09:00 KST = 00:00 UTC.
+  schedule:
+    - cron: "0 0 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  digest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      # dedup state: 커밋 없이 Actions cache로 유지.
+      # 캐시가 사라져도 같은 repo가 다시 전송될 뿐이라 benign.
+      - name: Restore dedup state
+        uses: actions/cache/restore@v4
+        with:
+          path: state.json
+          key: dedup-state-${{ github.run_id }}
+          restore-keys: dedup-state-
+
+      - run: pip install -r requirements.txt
+
+      - name: Send digest
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: python main.py
+
+      - name: Save dedup state
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: state.json
+          key: dedup-state-${{ github.run_id }}

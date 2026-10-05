@@ -1,0 +1,35 @@
+# GitHub Trending → Slack digest 설정
+# 코드 수정 없이 이 파일만 바꾸면 동작이 바뀐다.
+
+# 관심 언어. github.com/trending/<slug> 의 slug와 대소문자 무관하게 매칭된다.
+# 비워두면([]) 언어 필터를 걸지 않는다.
+languages:
+  - Python
+  - TypeScript
+  - Rust
+  - Go
+
+# 관심 키워드. repo 이름 + description에서 대소문자 무관 부분 매칭.
+# 언어 OR 키워드 중 하나만 맞아도 후보에 포함된다.
+keywords:
+  - AI
+  - LLM
+  - agent
+  - developer tools
+  - infrastructure
+  - database
+
+# 한 번에 보낼 최대 repo 수
+max_repositories: 10
+
+# LLM 요약 사용 여부. OPENAI_API_KEY가 없으면 자동으로 꺼진다.
+use_llm: true
+
+# 요약 언어 (ko | en)
+summary_language: ko
+
+# OpenAI 모델. 환경 변수 OPENAI_MODEL이 있으면 그쪽이 우선한다.
+llm_model: gpt-5-mini
+
+# 같은 repo를 다시 보내지 않을 기간(일)
+dedup_days: 14
