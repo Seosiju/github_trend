@@ -67,12 +67,19 @@ def main() -> int:
     # 수동 요청(slash command/수동 실행)은 dedup을 건너뛰고 항상 목록을 보여준다
     bypass = os.environ.get("BYPASS_DEDUP") == "true"
     threshold = int(config.get("respike_threshold", 1500))
+    max_n = int(config.get("max_repositories", 10))
+
+    # 상한은 순위 기준: top N 안의 급등 repo는 태그로 표시,
+    # top N 밖의 급등 repo는 목록 뒤에 추가로 붙는다.
     fresh = []
-    for r in repos:
+    for i, r in enumerate(repos):
         seen = r["fullname"] in state["sent"]
         if seen and r["stars_today"] >= threshold:
             r["respiked"] = True
-        if bypass or not seen or r.get("respiked"):
+        if i < max_n:
+            if bypass or not seen or r.get("respiked"):
+                fresh.append(r)
+        elif r.get("respiked"):
             fresh.append(r)
     print(f"[info] collected={len(repos)} fresh={len(fresh)}")
 

@@ -76,7 +76,7 @@ def collect(config: dict) -> list[dict]:
         repos = _search_new_repos(_SEARCH_PERIODS[period])
         picked = [r for r in repos if _matches(r, languages, keywords)]
         picked.sort(key=lambda r: r["stars"], reverse=True)
-        return picked[:max_n]
+        return picked
 
     # 전체 목록 + 언어별 목록. 언어별 slug는 소문자 형태가 대부분 그대로 동작한다.
     sources = [None] + sorted(languages)
@@ -96,4 +96,4 @@ def collect(config: dict) -> list[dict]:
 
     picked = [r for r in repos if _matches(r, languages, keywords)]
     picked.sort(key=lambda r: r["stars_today"], reverse=True)
-    return picked[:max_n]
+    return picked
