@@ -36,3 +36,7 @@ llm_model: gpt-5-mini
 
 # 같은 repo를 다시 보내지 않을 기간(일)
 dedup_days: 14
+
+# 이미 보낸 repo라도 해당 기간 증가 스타가 이 값 이상이면 "인기급상승"으로 재전송
+# (daily=하루 증가분, weekly=주간 증가분 기준)
+respike_threshold: 1500

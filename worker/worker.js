@@ -38,13 +38,13 @@ function menu() {
   return new Response(
     JSON.stringify({
       response_type: "ephemeral",
-      text: "GitHub Trending — 어떤 digest를 볼까요?",
+      text: "GitHub Trending — 어떤 기간을 볼까요?",
       blocks: [
         {
           type: "section",
           text: {
             type: "mrkdwn",
-            text: "*GitHub Trending* — 어떤 기간의 digest를 볼까요?",
+            text: "*GitHub Trending* — 어떤 기간을 볼까요?",
           },
         },
         {
@@ -110,7 +110,7 @@ export default {
       const resp = await dispatch(env, period);
       return ack(
         resp.ok
-          ? `:hourglass_flowing_sand: ${LABELS[period]} digest를 생성 중입니다. 잠시 후 이 채널에 도착합니다.`
+          ? `:hourglass_flowing_sand: ${LABELS[period]} 트렌딩을 가져오고 있습니다. 잠시 후 이 채널에 도착합니다.`
           : `:warning: GitHub dispatch 실패 (${resp.status}). 워크플로우/PAT를 확인해 주세요.`,
         true,
       );
@@ -123,7 +123,7 @@ export default {
     const resp = await dispatch(env, arg);
     return ack(
       resp.ok
-        ? `:hourglass_flowing_sand: ${LABELS[arg]} digest를 생성 중입니다. 잠시 후 이 채널에 도착합니다.`
+        ? `:hourglass_flowing_sand: ${LABELS[arg]} 트렌딩을 가져오고 있습니다. 잠시 후 이 채널에 도착합니다.`
         : `:warning: GitHub dispatch 실패 (${resp.status}). 워크플로우/PAT를 확인해 주세요.`,
     );
   },

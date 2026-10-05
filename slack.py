@@ -29,12 +29,13 @@ def _repo_blocks(idx: int, repo: dict, summaries: dict, stars_label: str) -> lis
         meta = f":star: {repo['stars']:,} total{lang} · created {repo['created_at']}"
     else:
         meta = f":star: {repo['stars']:,} total{lang}"
+    tag = ":fire: 인기급상승 — " if repo.get("respiked") else ""
     return [
         {
             "type": "section",
             "text": {
                 "type": "mrkdwn",
-                "text": f"*{idx}. <{repo['url']}|{repo['fullname']}>*\n{summary}",
+                "text": f"{tag}*{idx}. <{repo['url']}|{repo['fullname']}>*\n{summary}",
             },
         },
         _context(meta),

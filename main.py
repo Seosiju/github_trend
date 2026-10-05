@@ -68,7 +68,15 @@ def main() -> int:
     if os.environ.get("BYPASS_DEDUP") == "true":
         fresh = repos
     else:
-        fresh = [r for r in repos if r["fullname"] not in state["sent"]]
+        threshold = int(config.get("respike_threshold", 1500))
+        fresh, respiked = [], []
+        for r in repos:
+            if r["fullname"] not in state["sent"]:
+                fresh.append(r)
+            elif r["stars_today"] >= threshold:
+                r["respiked"] = True
+                respiked.append(r)
+        fresh += respiked
     print(f"[info] collected={len(repos)} fresh={len(fresh)}")
 
     summaries = summarizer.summarize(fresh, config)

@@ -54,6 +54,15 @@ jobs:
           BYPASS_DEDUP: ${{ github.event_name != 'schedule' }}
         run: python main.py
 
+      - name: Alert on failure
+        if: failure()
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: |
+          curl -s -X POST "$SLACK_WEBHOOK_URL" \
+            -H 'Content-Type: application/json' \
+            -d "{\"text\":\":warning: GitHub Trending digest 실패 — https://github.com/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}\"}"
+
       - name: Save dedup state
         if: always()
         uses: actions/cache/save@v4
