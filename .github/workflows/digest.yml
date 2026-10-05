@@ -10,13 +10,15 @@ on:
   workflow_dispatch:
     inputs:
       period:
-        description: "daily | weekly | monthly (비우면 config.yaml 기본값)"
+        description: "daily | weekly | monthly | yearly | rising (비우면 config.yaml 기본값)"
         required: false
         type: choice
         options:
           - daily
           - weekly
           - monthly
+          - yearly
+          - rising
 
 permissions:
   contents: read

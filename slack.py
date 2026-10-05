@@ -6,7 +6,13 @@ import requests
 
 MAX_BLOCKS = 45  # Slack 한 메시지당 block 상한 여유분
 
-_PERIOD_LABEL = {"daily": "Daily", "weekly": "Weekly", "monthly": "Monthly"}
+_PERIOD_LABEL = {
+    "daily": "Daily",
+    "weekly": "Weekly",
+    "monthly": "Monthly",
+    "yearly": "Yearly · 최근 1년 신생",
+    "rising": "Rising · 최근 30일 신생",
+}
 _STARS_LABEL = {"daily": "today", "weekly": "this week", "monthly": "this month"}
 
 
@@ -17,7 +23,12 @@ def _context(text: str) -> dict:
 def _repo_blocks(idx: int, repo: dict, summaries: dict, stars_label: str) -> list:
     summary = summaries.get(repo["fullname"]) or repo["description"] or "(no description)"
     lang = f" · {repo['language']}" if repo["language"] else ""
-    meta = f":star: +{repo['stars_today']:,} {stars_label} · {repo['stars']:,} total{lang}"
+    if repo["stars_today"]:
+        meta = f":star: +{repo['stars_today']:,} {stars_label} · {repo['stars']:,} total{lang}"
+    elif repo.get("created_at"):
+        meta = f":star: {repo['stars']:,} total{lang} · created {repo['created_at']}"
+    else:
+        meta = f":star: {repo['stars']:,} total{lang}"
     return [
         {
             "type": "section",

@@ -19,7 +19,7 @@ keywords:
   - infrastructure
   - database
 
-# 트렌딩 기간: daily | weekly | monthly
+# 트렌딩 기간: daily | weekly | monthly | yearly(1년 내 신생) | rising(30일 내 신생)
 period: daily
 
 # 한 번에 보낼 최대 repo 수

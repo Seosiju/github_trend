@@ -48,12 +48,17 @@ gh secret set OPENAI_API_KEY --body "sk-..."
 
 ## Slack slash command (선택)
 
-`/trending [daily|weekly|monthly]` — Cloudflare Worker가 Slack 명령을 받아 GitHub `repository_dispatch`로 중계한다. 코드는 `worker/` (wrangler).
+`/trending` — 기간 선택 버튼(일간/주간/월간/연간/빠른 성장)을 띄운다. `/trending weekly`처럼 인자로 바로 호출도 가능. Cloudflare Worker가 명령·버튼 클릭을 받아 GitHub `repository_dispatch`로 중계한다. 코드는 `worker/` (wrangler).
+
+- `daily|weekly|monthly`: GitHub trending 페이지
+- `yearly`: 최근 1년 내 생성 repo 중 stars 상위 (Search API)
+- `rising`: 최근 30일 내 생성 repo 중 stars 상위 (Search API)
 
 설정:
 1. Worker secret: `wrangler secret put SLACK_SIGNING_SECRET` (Slack 앱의 Signing Secret), `wrangler secret put GITHUB_TOKEN` (repo `Contents: Read and write` fine-grained PAT)
 2. Slack 앱 → **Slash Commands → Create New Command** → Command `/trending`, Request URL `https://github-trend-digest.jssim.workers.dev`
-3. 채널에서 `/trending`, `/trending weekly` 등으로 호출
+3. Slack 앱 → **Interactivity & Shortcuts → Interactivity ON** → Request URL 동일하게 입력 (버튼 클릭 수신용)
+4. 채널에서 `/trending` 호출
 
 ## 로컬 테스트
 
