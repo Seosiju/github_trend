@@ -1,9 +1,10 @@
 name: digest
 
 on:
-  # GitHub Actions cron은 UTC만 지원. 09:00 KST = 00:00 UTC.
+  # GitHub Actions cron은 UTC만 지원. 09:15 KST = 00:15 UTC.
+  # 정시(00분) 슬롯은 전체 이용자가 몰려 지연/누락이 잦아 비수기 분을 쓴다.
   schedule:
-    - cron: "0 0 * * *"
+    - cron: "15 0 * * *"
   # Slack slash command -> Cloudflare Worker -> 이 이벤트
   repository_dispatch:
     types: [trending-request]
